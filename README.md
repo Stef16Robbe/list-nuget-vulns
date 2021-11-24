@@ -7,6 +7,8 @@ an issue with the repo.
 
 ## TODO:
 - [x] read dotnet command info
-- [ ] parse info into obj
-- [ ] check recursively for each package (using NuGet API) in .sln which one uses vulnerable ones found in step 1
+- [x] parse info into obj
+- [x] get all packages in solution
+- [ ] get all subpackages from each package
+- [ ] check in what 'tree' the vuln exists
 - [ ] show results in tree thingy(?)
