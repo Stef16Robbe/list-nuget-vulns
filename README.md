@@ -9,6 +9,6 @@ an issue with the repo.
 - [x] read dotnet command info
 - [x] parse info into obj
 - [x] get all packages in solution
-- [ ] get all subpackages from each package
+- [ ] get all dependencies from each package
 - [ ] check in what 'tree' the vuln exists
 - [ ] show results in tree thingy(?)

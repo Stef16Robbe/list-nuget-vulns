@@ -47,6 +47,7 @@ Project `Helpers` has the following vulnerable packages
 # DIR = sys.argv[1]
 DIR = ""
 NUGET_PKG_INFO_URL = "https://azuresearch-usnc.nuget.org/query?q="
+NUGET_PKG_DEP_INFO_URL = "https://api.nuget.org/v3/registration3/"
 
 def get_transitive_vulns():
     all_vulns = []
@@ -78,13 +79,23 @@ def get_solution_packages(solution):
     ]
     
     result = subprocess.run(command, shell=True, stdout=subprocess.PIPE).stdout.decode('utf-8')
-    found = list(set(re.findall('> .+..+..+', result)))
+    found = re.findall('> .+..+..+', result)
     for match in found:
         m = match.split()
         v = (m[1], m[3])
         all_pkgs.append(v)
     
-    return all_pkgs
+    return list(set(all_pkgs))
+
+def get_package_dependencies(package):
+    res = requests.get(NUGET_PKG_DEP_INFO_URL + package[0].lower() + "/index.json")
+    if res.status_code != 200:
+        print(f"{package[0]} not found in NuGet API, skipping it.")
+        return package[0]
+
+    data = res.json()["items"][0]
+    versions = data["count"]
+    return data["items"][versions - 1]["catalogEntry"]["dependencyGroups"]
 
 def main():
     try:
@@ -106,10 +117,21 @@ def main():
     all_vulns: List[Vulnerability] = get_transitive_vulns()
     print(str(all_vulns) + "\n")
 
-    all_pkgs = get_solution_packages(solution)
-    print(all_pkgs)
-    # https://www.nuget.org/packages/System.Net.Http/4.1.4
+    sln_pkgs = get_solution_packages(solution)
+    print(sln_pkgs)
 
+    for pkg in sln_pkgs:
+        # TODO:
+        # recursive
+        deps = get_package_dependencies(pkg)
+        
+
+
+    
+    # https://www.nuget.org/packages/System.Net.Http/4.1.4
+    # https://docs.microsoft.com/en-us/nuget/api/registration-base-url-resource#request-parameters
+    # https://api.nuget.org/v3/registration3/nuget.server.core/index.json
+    # http://cslibrary.stanford.edu/110/BinaryTrees.html
 
 if __name__ == "__main__":
     main()
