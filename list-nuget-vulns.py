@@ -95,7 +95,13 @@ def get_package_dependencies(package):
 
     data = res.json()["items"][0]
     versions = data["count"]
-    return data["items"][versions - 1]["catalogEntry"]["dependencyGroups"]
+    test = None
+    try:
+        test = data["items"][versions - 1]["catalogEntry"]["dependencyGroups"]
+    except KeyError as e:
+        print(package[0])
+    
+    return test
 
 def main():
     try:
