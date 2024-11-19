@@ -1,0 +1,15 @@
+{
+    "include": [
+        "src"
+    ],
+    "defineConstant": {
+        "DEBUG": true
+    },
+    "reportMissingImports": "error",
+    "reportMissingTypeStubs": false,
+    "pythonVersion": "3.12",
+    "pythonPlatform": "Linux",
+    "strict": [
+        "src"
+    ]
+}
