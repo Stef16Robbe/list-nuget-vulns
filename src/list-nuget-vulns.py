@@ -49,6 +49,7 @@ DIR = ""
 NUGET_PKG_INFO_URL = "https://azuresearch-usnc.nuget.org/query?q="
 NUGET_PKG_DEP_INFO_URL = "https://api.nuget.org/v3/registration3/"
 
+
 def get_transitive_vulns():
     all_vulns = []
     # command = [
@@ -61,7 +62,7 @@ def get_transitive_vulns():
     # ]
     # result = subprocess.run(command, shell=True, stdout=subprocess.PIPE).stdout.decode('utf-8')
     # # fuck you, this works
-    found = list(set(re.findall('> .+..+..+', result)))
+    found = list(set(re.findall("> .+..+..+", result)))
     for match in found:
         m = match.split()
         v = Vulnerability(m[1], m[2], m[3], m[4])
@@ -69,23 +70,22 @@ def get_transitive_vulns():
 
     return all_vulns
 
+
 def get_solution_packages(solution):
     all_pkgs = []
-    command = [
-        "dotnet",
-        "list",
-        solution,
-        "package"
-    ]
-    
-    result = subprocess.run(command, shell=True, stdout=subprocess.PIPE).stdout.decode('utf-8')
-    found = re.findall('> .+..+..+', result)
+    command = ["dotnet", "list", solution, "package"]
+
+    result = subprocess.run(command, shell=True, stdout=subprocess.PIPE).stdout.decode(
+        "utf-8"
+    )
+    found = re.findall("> .+..+..+", result)
     for match in found:
         m = match.split()
         v = (m[1], m[3])
         all_pkgs.append(v)
-    
+
     return list(set(all_pkgs))
+
 
 def get_package_dependencies(package):
     res = requests.get(NUGET_PKG_DEP_INFO_URL + package[0].lower() + "/index.json")
@@ -100,8 +100,9 @@ def get_package_dependencies(package):
         test = data["items"][versions - 1]["catalogEntry"]["dependencyGroups"]
     except KeyError as e:
         print(package[0])
-    
+
     return test
+
 
 def main():
     try:
@@ -113,8 +114,8 @@ def main():
     solution = ""
     for root, _, files in os.walk(DIR):
         for file in files:
-            if file.endswith('.sln'):
-                solution = root+'/'+str(file)
+            if file.endswith(".sln"):
+                solution = root + "/" + str(file)
 
     if solution == "":
         print("no solution found in given folder")
@@ -130,14 +131,12 @@ def main():
         # TODO:
         # recursive
         deps = get_package_dependencies(pkg)
-        
 
-
-    
     # https://www.nuget.org/packages/System.Net.Http/4.1.4
     # https://docs.microsoft.com/en-us/nuget/api/registration-base-url-resource#request-parameters
     # https://api.nuget.org/v3/registration3/nuget.server.core/index.json
     # http://cslibrary.stanford.edu/110/BinaryTrees.html
+
 
 if __name__ == "__main__":
     main()
